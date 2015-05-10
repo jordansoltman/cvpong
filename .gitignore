@@ -5,6 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
+/CSS487_Program4_GameBoard/OpenCV_Debug.props
 
 # Build results
 
