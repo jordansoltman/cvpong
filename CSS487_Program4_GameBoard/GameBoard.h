@@ -35,7 +35,7 @@ class GameBoard {
 public:
 	GameBoard();
 	bool gameOn();
-	void play(const Mat& background);
+	void play(const Mat& background, int leftPaddlePos, int rightPaddleLoc);
 
 private:
 	void displayBall();

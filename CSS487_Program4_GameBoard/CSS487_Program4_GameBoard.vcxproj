@@ -68,9 +68,11 @@
   <ItemGroup>
     <ClCompile Include="Driver.cpp" />
     <ClCompile Include="GameBoard.cpp" />
+    <ClCompile Include="MotionPaddleDector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameBoard.h" />
+    <ClInclude Include="MotionPaddleDetector.h" />
     <ClInclude Include="PaddleDetector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -33,6 +33,6 @@ public:
 	 * Postconditions:	Should return a PaddlePositions struct that contains the two
 	 * 					positions of the left and right paddles
 	 */
-	virtual PaddlePositions processFrame(Mat frame) = 0;
+	virtual PaddlePositions processFrame(Mat& frame) = 0;
 };
 
