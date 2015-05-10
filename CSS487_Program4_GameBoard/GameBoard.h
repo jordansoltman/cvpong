@@ -8,24 +8,24 @@
 using namespace cv;
 using namespace std;
 
-const int DEFAULT_X = 300;
-const int DEFAULT_Y = 200;
+const int DEFAULT_X = 640;
+const int DEFAULT_Y = 480;
 const int BOARDER_WIDTH = 3;
 const int BALL_SIZE = 11;
 const int PADDLE_X = 9;
-const int PADDLE_Y = 99;
+const int PADDLE_Y = 66;
 const int PADDLE_MOD = PADDLE_Y / 3;
-const int WINNING_SCORE = 10;
-const double SPEED_INCREMENT = 0.5;
+const int WINNING_SCORE = 3;
+const double SPEED_INCREMENT = 1.5;
 
-const int MOVE_LEFT = -1;
-const int MOVE_RIGHT = 1;
-const int MOVE_UP = -1;
-const int MOVE_DOWN = 1;
+const int MOVE_LEFT = -2;
+const int MOVE_RIGHT = 2;
+const int MOVE_UP = -2;
+const int MOVE_DOWN = 2;
 const int MOVE_HORIZ = 0;
 
 const int BOARDER_COLOR[3] = {0, 153, 0};
-const int BALL_COLOR[3] = {0, 200, 200};
+const int BALL_COLOR[3] = {0, 204, 0};
 const int L_PADDLE_COLOR[3] = {0 , 0, 255};
 const int R_PADDLE_COLOR[3] = {255, 0, 0};
 
@@ -35,11 +35,10 @@ class GameBoard {
 public:
 	GameBoard();
 	bool gameOn();
-	void play();
+	void play(const Mat& background);
 
 private:
 	void displayBall();
-	void setBoarder();
 	void setBall();
 	void checkCollisions();
 	void setRightPaddle(int y);
@@ -67,8 +66,6 @@ private:
 	bool m_gameOn;
 	int m_score[2];
 	double m_speedFactor;
-	int m_Ydim;
-	int m_Xdim;
 	Mat m_board;
 };
 #endif
