@@ -12,7 +12,9 @@ int main() {
 	while(pong.gameOn()) {
 		cap >> frame;
 		pong.play(frame);
+		int key = waitKey(30);
+		if (key == 27) break; // If 'esc' key is pressed we'll quit
 	}
-	waitKey(0);
+	
 	return(0);
 };
