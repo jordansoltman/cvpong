@@ -23,6 +23,7 @@ public:
 	};
 
 	PaddleDetector() {};
+	
 	virtual ~PaddleDetector() {};
 
 	/*

@@ -13,18 +13,19 @@ ColorPaddleDetector::~ColorPaddleDetector()
 
 void ColorPaddleDetector::configure()
 {
-	namedWindow("Configure", CV_WINDOW_AUTOSIZE); //create a window called "Control"
-	//Create trackbars in "Control" window
-	cvCreateTrackbar("Low Hue", "Configure", &lowHue, 179); //Hue (0 - 179)
-	cvCreateTrackbar("High Hue", "Configure", &highHue, 179);
 
-	cvCreateTrackbar("Low Saturation", "Configure", &lowSaturation, 255); //Saturation (0 - 255)
-	cvCreateTrackbar("High Saturation", "Configure", &highSaturation, 255);
-
-	cvCreateTrackbar("Low Value", "Configure", &lowValue, 255); //Value (0 - 255)
-	cvCreateTrackbar("High Value", "Configure", &highValue, 255);
-	namedWindow("Output", CV_WINDOW_AUTOSIZE);
 	Mat frame, thresholded;
+
+	namedWindow("Settings", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+	//Create trackbars in "Control" window
+	cvCreateTrackbar("Low Hue", "Settings", &lowHue, 179); //Hue (0 - 179)
+	cvCreateTrackbar("High Hue", "Settings", &highHue, 179);
+
+	cvCreateTrackbar("Low Saturation", "Settings", &lowSaturation, 255); //Saturation (0 - 255)
+	cvCreateTrackbar("High Saturation", "Settings", &highSaturation, 255);
+
+	cvCreateTrackbar("Low Value", "Settings", &lowValue, 255); //Value (0 - 255)
+	cvCreateTrackbar("High Value", "Settings", &highValue, 255);
 
 	while (true)
 	{
@@ -32,12 +33,17 @@ void ColorPaddleDetector::configure()
 		flip(frame, frame, 1);
 		thresholdImage(frame, thresholded);
 		
-		imshow("Output", thresholded);
+		imshow("Configure", thresholded);
 		int key = waitKey(30);
 		if (key != -1) break;
 	}
 
 	cvDestroyAllWindows();
+}
+
+void ColorPaddleDetector::configureSettings(int e, int x, int y, int flags, void *userData)
+{
+
 }
 
 void ColorPaddleDetector::thresholdImage(Mat &f, Mat &destination)
