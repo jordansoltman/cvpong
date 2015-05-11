@@ -66,11 +66,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorPaddleDetector.cpp" />
     <ClCompile Include="Driver.cpp" />
     <ClCompile Include="GameBoard.cpp" />
     <ClCompile Include="MotionPaddleDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorPaddleDetector.h" />
     <ClInclude Include="GameBoard.h" />
     <ClInclude Include="MotionPaddleDetector.h" />
     <ClInclude Include="PaddleDetector.h" />

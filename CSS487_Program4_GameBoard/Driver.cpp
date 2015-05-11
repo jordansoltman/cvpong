@@ -1,6 +1,7 @@
 #include <iostream>
 #include "GameBoard.h"
 #include "MotionPaddleDetector.h"
+#include "ColorPaddleDetector.h"
 using namespace std;
 
 int main() {
@@ -9,13 +10,15 @@ int main() {
 		return(-1);
 	}
 
-	MotionPaddleDector MPD(&cap);
+	ColorPaddleDetector CPD(&cap);
+	CPD.configure();
 	GameBoard pong;
-	Mat frame;
+	Mat frame, flipped;
 	while(pong.gameOn()) {
 		cap >> frame;
-		MPD.processFrame(frame);
-		pong.play(frame, MPD.getLeftPaddleLoc(), MPD.getRightPaddleLoc());
+		flip(frame, frame, 1);
+		CPD.processFrame(frame);
+		pong.play(frame, CPD.getLeftPaddleLoc(), CPD.getRightPaddleLoc());
 		int key = waitKey(30);
 		if (key == 27) break; // If 'esc' key is pressed we'll quit
 	}

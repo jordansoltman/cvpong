@@ -37,5 +37,6 @@ public:
 
 	virtual int getLeftPaddleLoc() = 0;
 	virtual int getRightPaddleLoc() = 0;
+	virtual void configure() {};
 };
 
