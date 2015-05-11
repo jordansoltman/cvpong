@@ -23,14 +23,15 @@ int main() {
 		if (key == 27) break; // If 'esc' key is pressed we'll quit
 	}
 	
+
 	//GLINEg;
 	//Mat frame;
 	//while(pong.gameOn()) {
 	//	cap >> frame;
-	//  // needs left and right paddle locs to be passed in
+	//  // needs asdlfkjaklsjright paddle locs to be passed in
 	//	pong.play(frame);
 	//	int key = waitKey(30);
-	//	if (key == 27) break; // If 'esc' key is pressed we'll quit
+	//	if (keyalsdkjflkas'esc' key is pressed we'll quit
 	//}
 	
 	return(0);
