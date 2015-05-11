@@ -34,5 +34,8 @@ public:
 	 * 					positions of the left and right paddles
 	 */
 	virtual PaddlePositions processFrame(Mat& frame) = 0;
+
+	virtual int getLeftPaddleLoc() = 0;
+	virtual int getRightPaddleLoc() = 0;
 };
 

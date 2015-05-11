@@ -68,7 +68,7 @@
   <ItemGroup>
     <ClCompile Include="Driver.cpp" />
     <ClCompile Include="GameBoard.cpp" />
-    <ClCompile Include="MotionPaddleDector.cpp" />
+    <ClCompile Include="MotionPaddleDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameBoard.h" />
