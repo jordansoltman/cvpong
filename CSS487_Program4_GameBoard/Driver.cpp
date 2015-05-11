@@ -23,7 +23,7 @@ int main() {
 		if (key == 27) break; // If 'esc' key is pressed we'll quit
 	}
 	
-	//GameBoard pong;
+	//GLINEg;
 	//Mat frame;
 	//while(pong.gameOn()) {
 	//	cap >> frame;
