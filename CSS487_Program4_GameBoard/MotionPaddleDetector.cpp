@@ -59,7 +59,7 @@ void MotionPaddleDector::detectMotion(Mat thresholdImage, Mat& cameraFeed) {
 	thresholdImage.copyTo(temp);
 
 	// these two vectors needed for output of findContours
-	vector< vector<Point> > contours;
+	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 
 	// find contours of filtered image using openCV findContours function
