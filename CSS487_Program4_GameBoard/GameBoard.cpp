@@ -28,12 +28,6 @@ bool GameBoard::gameOn() {
 }
 
 void GameBoard::play(const Mat& background, int leftPaddlePos, int rightPaddleLoc) {
-	// random number for paddle location, used for testing
-	//srand(static_cast<int>(time(NULL)));
-	//int y1 = rand() % DEFAULT_Y;
-	//srand((y1 + 9971232) % 17);
-	//int y2 = rand() % DEFAULT_Y;
-	
 	m_board = background;
 	setLeftPaddle(leftPaddlePos);
 	setRightPaddle(rightPaddleLoc);

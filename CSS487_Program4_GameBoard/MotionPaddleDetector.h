@@ -15,9 +15,11 @@ public:
 	int getRightPaddleLoc();
 
 private:
-	void detectMotion(Mat thresholdImage, Mat &cameraFeed);
+	void detectMotionLeft(Mat thresholdImage, Mat &left);
+	void detectMotionRight(Mat thresholdImage, Mat &right);
 
-	Rect m_objBoundingRect;
+	Rect m_objBoundingRectLeft;
+	Rect m_objBoundingRectRight;
 	int m_leftPaddle[2];
 	int m_rightPaddle[2];
 	Mat m_frame1;

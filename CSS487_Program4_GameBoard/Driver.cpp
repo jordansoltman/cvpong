@@ -35,15 +35,15 @@ int main() {
 		return(-1);
 	}
 
-	MotionPaddleDector left_MPD(&cap);
-	MotionPaddleDector right_MPD(&cap);
+	MotionPaddleDector MPD(&cap);
 	GameBoard pong;
 	Mat frame;
 
 	while(pong.gameOn()) {
 		cap >> frame;
-		left_MPD.processFrame(frame);
-		pong.play(frame, left_MPD.getLeftPaddleLoc(), right_MPD.getLeftPaddleLoc());
+		flip(frame, frame, 1);
+		MPD.processFrame(frame);
+		pong.play(frame, MPD.getLeftPaddleLoc(), MPD.getRightPaddleLoc());
 		int key = waitKey(30);
 		if(key == 27) {break;} // If 'esc' key is pressed we'll quit
 	}
