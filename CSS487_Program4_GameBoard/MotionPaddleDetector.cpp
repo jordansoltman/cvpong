@@ -3,8 +3,6 @@
 #include "MotionPaddleDetector.h"
 
 MotionPaddleDector::MotionPaddleDector(VideoCapture* vid) : PaddleDetector() {
-	m_objBoundingRectLeft = Rect(0, 0, 0, 0);
-	m_objBoundingRectRight = Rect(0, 0, 0, 0);
 	m_leftPaddle[0] = 0;
 	m_leftPaddle[1] = 0;
 	m_rightPaddle[0] = 0;
@@ -14,42 +12,42 @@ MotionPaddleDector::MotionPaddleDector(VideoCapture* vid) : PaddleDetector() {
 
 PaddleDetector::PaddlePositions MotionPaddleDector::processFrame(Mat& frame) {
 	PaddlePositions pd(3, 3);
-	// capture sequential images as frame1 and frame2 for movement
-	// comparision
+	Mat frame2, gray, gray2, thres, diff;
 
-	// read in frame1 and convert to grayscale
-	m_vid->read(m_frame1);
-	cvtColor(m_frame1, m_gray1, COLOR_BGR2GRAY);
+	// capture sequential images as frame1 and frame2 for movement comparison
+
+	// read in frame and convert to grayscale
+	m_vid->read(frame);
+	cvtColor(frame, gray, COLOR_BGR2GRAY);
 
 	// read in frame2 and convert to grayscale
-	m_vid->read(m_frame2);
-	cvtColor(m_frame2, m_gray2, COLOR_BGR2GRAY);
+	m_vid->read(frame2);
+	cvtColor(frame2, gray2, COLOR_BGR2GRAY);
 
 	// create difference image of frame1 and frame2 after being converted to
 	// grayscale images
-	absdiff(m_gray1, m_gray2, m_differenceImg);
+	absdiff(gray, gray2, diff);
 
 	// threshold difference image at a given sensitivity value
-	threshold(m_differenceImg, m_thresholdImg, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
+	threshold(diff, thres, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
 
 	// blur the image to get rid of the noise. output will be an intensity image
-	blur(m_thresholdImg, m_thresholdImg, cv::Size(BLUR_SIZE, BLUR_SIZE));
+	blur(thres, thres, cv::Size(BLUR_SIZE, BLUR_SIZE));
 
 	// threshold a second time to get a binary image (after blurring)
-	threshold(m_thresholdImg, m_thresholdImg, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
+	threshold(thres, thres, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
 
-	// split frame into 
-	frame = m_frame1;
-
+	// split frame and threshold into left and right halves
 	Mat left(frame, Rect(0, 0, 320, 480));
-	Mat thresholdLeft(m_thresholdImg, Rect(0, 0, 320, 480));
-
+	Mat thresholdLeft(thres, Rect(0, 0, 320, 480));
 	Mat right(frame, Rect(320, 0, 320, 480));
-	Mat thresholdRight(m_thresholdImg, Rect(320, 0, 320, 480));
+	Mat thresholdRight(thres, Rect(320, 0, 320, 480));
 
+	// detect motion in each 
 	detectMotionLeft(thresholdLeft, left);
 	detectMotionRight(thresholdRight, right);
 
+	// recombine the left and right frames into the frame being processed
 	frame.rowRange(0, 480).colRange(0, 319) = left;
 	frame.rowRange(0, 480).colRange(320, 639) = right;
 
@@ -88,9 +86,9 @@ void MotionPaddleDector::detectMotionLeft(Mat thresholdImage, Mat &left) {
 
 		// make a bounding rectangle around the largest contour then find its centroid
 		// this will be the object's final estimated position.
-		m_objBoundingRectLeft = boundingRect(largestContourVec.at(0));
-		int xpos = m_objBoundingRectLeft.x + m_objBoundingRectLeft.width / 2;
-		int ypos = m_objBoundingRectLeft.y + m_objBoundingRectLeft.height / 2;
+		Rect objBoundingRect = boundingRect(largestContourVec.at(0));
+		int xpos = objBoundingRect.x + objBoundingRect.width / 2;
+		int ypos = objBoundingRect.y + objBoundingRect.height / 2;
 
 		//update left paddle's positions
 		m_leftPaddle[0] = xpos, m_leftPaddle[1] = ypos;
@@ -131,9 +129,9 @@ void MotionPaddleDector::detectMotionRight(Mat thresholdImage, Mat &right) {
 
 		// make a bounding rectangle around the largest contour then find its centroid
 		// this will be the object's final estimated position.
-		m_objBoundingRectRight = boundingRect(largestContourVec.at(0));
-		int xpos = m_objBoundingRectRight.x + m_objBoundingRectRight.width / 2;
-		int ypos = m_objBoundingRectRight.y + m_objBoundingRectRight.height / 2;
+		Rect objBoundingRect = boundingRect(largestContourVec.at(0));
+		int xpos = objBoundingRect.x + objBoundingRect.width / 2;
+		int ypos = objBoundingRect.y + objBoundingRect.height / 2;
 
 		//update left paddle's positions
 		m_rightPaddle[0] = xpos, m_rightPaddle[1] = ypos;
