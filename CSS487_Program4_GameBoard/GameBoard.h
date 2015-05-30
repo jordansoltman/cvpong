@@ -15,7 +15,7 @@ const int BALL_SIZE = 33;
 const int PADDLE_X = 18;
 const int PADDLE_Y = 120;
 const int PADDLE_MOD = PADDLE_Y / 3;
-const int WINNING_SCORE = 33;
+const int WINNING_SCORE = 13;
 const double SPEED_INCREMENT = 1.5;
 
 const int MOVE_LEFT = -11;

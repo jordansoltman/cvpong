@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 		// no command line args, prompt for game type
 		cout << "Pick your gametype. Enter \"motion\" or \"color\" to play." << endl;
 		cout << "Gametype: ";
-		gametype = cin.get();
+		cin >> gametype;
 
 		if(gametype != CPD_FLAG) {
 			gametype = MPD_FLAG;

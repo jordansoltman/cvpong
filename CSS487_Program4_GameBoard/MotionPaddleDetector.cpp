@@ -1,15 +1,14 @@
-#ifndef MotionPaddleDetector_CPP
-#define MotionPaddleDetector_CPP
+#ifndef MOTIONPADDLEDETECTOR_CPP
+#define MOTIONPADDLEDETECTOR_CPP
 #include "MotionPaddleDetector.h"
 
 MotionPaddleDetector::MotionPaddleDetector(VideoCapture* vid) : PaddleDetector() {
+	m_leftPaddlePos = DEFAULT_PADDLE_POSITION;
+	m_rightPaddlePos = DEFAULT_PADDLE_POSITION;
 	m_vid = vid;
-	m_leftPaddlePos = 0;
-	m_rightPaddlePos = 0;
 }
 
-PaddleDetector::PaddlePositions MotionPaddleDetector::processFrame(Mat& frame) {
-	PaddlePositions pd(3, 3);
+void MotionPaddleDetector::processFrame(Mat& frame) {
 	Mat frame2, gray, gray2, thres, diff;
 
 	// use sequential images (frame and frame2) for motion detection
@@ -44,7 +43,6 @@ PaddleDetector::PaddlePositions MotionPaddleDetector::processFrame(Mat& frame) {
 	// detect motion in each 
 	detectMotionLeft(thresholdLeft, frame);
 	detectMotionRight(thresholdRight, frame);
-	return(pd);
 }
 
 int MotionPaddleDetector::getLeftPaddleLoc() {

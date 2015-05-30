@@ -15,13 +15,7 @@ class PaddleDetector
 {
 public:
 
-	static const int UNKNOWN_PADDLE_POSITION = -1;
-
-	struct PaddlePositions {
-		int leftPaddlePosition = UNKNOWN_PADDLE_POSITION;
-		int rightPaddlePosition = UNKNOWN_PADDLE_POSITION;
-		PaddlePositions(int l, int r) : leftPaddlePosition(l), rightPaddlePosition(r){};
-	};
+	static const int DEFAULT_PADDLE_POSITION = 0;
 
 	PaddleDetector() {};
 	
@@ -32,13 +26,16 @@ public:
 	 * Abstract method process frame
 	 *
 	 * Preconditions:	Frame will be a vaild mat object with one frame of video
-	 * Postconditions:	Should return a PaddlePositions struct that contains the two
-	 * 					positions of the left and right paddles
+	 * Postconditions:	Sets the paddle positions of the left and right paddles
 	 */
-	virtual PaddlePositions processFrame(Mat& frame) = 0;
+	virtual void processFrame(Mat& frame) = 0;
 
 	virtual int getLeftPaddleLoc() = 0;
 	virtual int getRightPaddleLoc() = 0;
 	virtual void configure() {};
+
+protected:
+	int m_leftPaddlePos;
+	int m_rightPaddlePos;
 };
 

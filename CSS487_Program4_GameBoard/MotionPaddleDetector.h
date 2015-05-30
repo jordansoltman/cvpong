@@ -1,5 +1,5 @@
-#ifndef MotionPaddleDetector_H
-#define MotionPaddleDetector_H
+#ifndef MOTIONPADDLEDETECTOR_H
+#define MOTIONPADDLEDETECTOR_H
 #include "PaddleDetector.h"
 
 class MotionPaddleDetector : public PaddleDetector {
@@ -9,7 +9,7 @@ public:
 	MotionPaddleDetector(VideoCapture* vid);
 
 	~MotionPaddleDetector() {}
-	virtual PaddlePositions processFrame(Mat& frame);
+	virtual void processFrame(Mat& frame);
 
 	int getLeftPaddleLoc();
 	int getRightPaddleLoc();
@@ -18,9 +18,6 @@ private:
 	void detectMotionLeft(Mat& thresholdImage, Mat& left);
 	void detectMotionRight(Mat& thresholdImage, Mat& right);
 
-	vector<vector<Point>> m_prevContour;
-	int m_leftPaddlePos;
-	int m_rightPaddlePos;
 	VideoCapture* m_vid;
 };
 

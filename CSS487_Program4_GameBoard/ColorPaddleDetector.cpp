@@ -1,15 +1,15 @@
 #include "ColorPaddleDetector.h"
 
-
 ColorPaddleDetector::ColorPaddleDetector(VideoCapture *vid)
 {
+	m_leftPaddlePos = DEFAULT_PADDLE_POSITION;
+	m_rightPaddlePos = DEFAULT_PADDLE_POSITION;
 	this->vid = vid;
+	configure();
 }
 
 
-ColorPaddleDetector::~ColorPaddleDetector()
-{
-}
+ColorPaddleDetector::~ColorPaddleDetector() {}
 
 void ColorPaddleDetector::configure()
 {
@@ -48,7 +48,8 @@ void ColorPaddleDetector::configureSettings(int e, int x, int y, int flags, void
 
 void ColorPaddleDetector::thresholdImage(Mat &f, Mat &destination)
 {
-	Mat HSV, frame = f.clone();
+	Mat HSV;
+	Mat frame = f.clone();
 
 	// Create a HSV version of the grame
 	cvtColor(frame, HSV, COLOR_BGR2HSV);
@@ -56,19 +57,17 @@ void ColorPaddleDetector::thresholdImage(Mat &f, Mat &destination)
 	// Threshold image
 	inRange(HSV, Scalar(lowHue, lowSaturation, lowValue), Scalar(highHue, highSaturation, highValue), destination); //Threshold the image
 
-	// TODO: look into this more V
-
-	//morphological opening (remove small objects from the foreground)
+	// remove small objects from the image foreground 
 	erode(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 	dilate(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
-	//morphological closing (fill small holes in the foreground)
+	// fill the removed holes in the image foreground 
 	dilate(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 	erode(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 }
 
 
-PaddleDetector::PaddlePositions ColorPaddleDetector::processFrame(Mat &frame)
+void ColorPaddleDetector::processFrame(Mat &frame)
 {
 	// need to test this here to make sure it is working properly
 	flip(frame, frame, 1);
@@ -99,7 +98,7 @@ PaddleDetector::PaddlePositions ColorPaddleDetector::processFrame(Mat &frame)
 		int x = left_m10 / left_area;
 		int y = left_m01 / left_area;
 
-		leftPaddlePos = y;
+		m_leftPaddlePos = y;
 
 		// draw crosshairs through the point being tracked in the left frame
 		circle(frame, Point(x, y), 10, Scalar(0, 0, 255), 2);
@@ -115,9 +114,9 @@ PaddleDetector::PaddlePositions ColorPaddleDetector::processFrame(Mat &frame)
 		int x = right_m10 / right_area;
 		int y = right_m01 / right_area;
 
-		rightPaddlePos = y;
+		m_rightPaddlePos = y;
 
-		// position the object appears in the entire frame
+		// position the right object appears in the entire frame
 		x = (frame.cols / 2) + x;
 
 		// draw crosshairs through the point being tracked in the right frame
@@ -127,16 +126,13 @@ PaddleDetector::PaddlePositions ColorPaddleDetector::processFrame(Mat &frame)
 		line(frame, Point(x, y), Point(x - 15, y), Scalar(255, 0, 0), 2);
 		line(frame, Point(x, y), Point(x + 15, y), Scalar(255, 0, 0), 2);
 	}
-
-	return PaddlePositions(leftPaddlePos, rightPaddlePos);
-
 }
 
 int ColorPaddleDetector::getLeftPaddleLoc()
 {
-	return leftPaddlePos;
+	return m_leftPaddlePos;
 }
 int ColorPaddleDetector::getRightPaddleLoc()
 {
-	return rightPaddlePos;
+	return m_rightPaddlePos;
 }
