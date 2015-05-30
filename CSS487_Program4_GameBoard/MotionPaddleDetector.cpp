@@ -65,8 +65,8 @@ void MotionPaddleDetector::processFrame(Mat& frame) {
 	Mat thresholdRight(thres, Rect(320, 0, 320, 480));
 
 	// detect motion in each half of the frame
-	detectMotion(thresholdLeft, frame, false);
-	detectMotion(thresholdRight, frame, true);
+	detectMotion(thresholdLeft, frame, IS_RED);
+	detectMotion(thresholdRight, frame, IS_BLUE);
 }
 
 /*
