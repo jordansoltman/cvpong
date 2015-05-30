@@ -2,12 +2,29 @@
 #define MOTIONPADDLEDETECTOR_CPP
 #include "MotionPaddleDetector.h"
 
+/*
+* MotionPaddleDetector default constructor
+*
+* preconditions:	vid must be a valid VideoCapture object point not equal to nullptr
+* postconditions:	sets left and right paddles to default position and sets m_vid 
+*					to vid
+*/
 MotionPaddleDetector::MotionPaddleDetector(VideoCapture* vid) : PaddleDetector() {
 	m_leftPaddlePos = DEFAULT_PADDLE_POSITION;
 	m_rightPaddlePos = DEFAULT_PADDLE_POSITION;
 	m_vid = vid;
 }
 
+/*
+* processFrame
+*
+* uses sequential images to detect motion in the left and right halves of the frame.
+*
+* preconditions:	frame must be a valid Mat object representing a single frame from 
+*					from a VideoCapture object
+* postconditions:	sets left and right paddles according to motion detected in the
+*					left and right halves of the frame, respectively
+*/
 void MotionPaddleDetector::processFrame(Mat& frame) {
 	Mat frame2, gray, gray2, thres, diff;
 
@@ -40,93 +57,92 @@ void MotionPaddleDetector::processFrame(Mat& frame) {
 	Mat thresholdLeft(thres, Rect(0, 0, 320, 480));
 	Mat thresholdRight(thres, Rect(320, 0, 320, 480));
 
-	// detect motion in each 
-	detectMotionLeft(thresholdLeft, frame);
-	detectMotionRight(thresholdRight, frame);
+	// detect motion in each half of the frame
+	detectMotion(thresholdLeft, frame, false);
+	detectMotion(thresholdRight, frame, true);
 }
 
+/*
+* detectMotion
+*
+* detects motion in a thresholded image by finding all contours in the image and then
+* using the largest contour to determine the motion of the paddle.
+*
+* preconditions:	thres must be one half (left or right) of the threshold image of the
+*					difference image from the sequential frames. frame must be the video
+*					frame being processed. isRight should be set true if we are detecting
+*					motion in the right frame, otherwise it should be false as we are
+*					tracking motion in the left frame.
+* postconditions:	sets the paddle position of the paddle indicated by isRight and draws
+*					a crosshair around the object being tracked
+*/
+void MotionPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
+	bool objectDetected = false;
+
+	// these two vectors are needed for the output of findContours
+	vector<vector<Point>> contours;
+	vector<Vec4i> hierarchy;
+
+	// find contours of filtered image using openCV findContours function
+	findContours(thres, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);// retrieves external contours
+
+	// if contours vector is not empty, we have found some objects
+	objectDetected = contours.size() > 0 ? true : false;
+
+	if(objectDetected){
+		// the largest contour is found at the end of the contours vector
+		// we will simply assume that the biggest contour is the object we are looking for.
+		vector<vector<Point>> largestContourVec;
+		largestContourVec.push_back(contours.at(contours.size() - 1));
+
+		// make a bounding rectangle around the largest contour then find its centroid
+		// this will be the object's final estimated position.
+		Rect objBoundingRect = boundingRect(largestContourVec.at(0));
+		int x = objBoundingRect.x + objBoundingRect.width / 2;
+		int y = objBoundingRect.y + objBoundingRect.height / 2;
+
+		
+		Scalar color;
+		if(isRight) {
+			//update right paddle's position and set crosshair color to blue
+			m_rightPaddlePos = y;
+			x = (frame.cols / 2) + x;
+			color = BLUE;
+		} else {
+			// update left paddle's position and set crosshair color to red
+			m_leftPaddlePos = y;
+			color = RED;
+		}
+
+		// draw crosshairs through the point being tracked in right frame
+		circle(frame, Point(x, y), 10, color, 2);
+		line(frame, Point(x, y), Point(x, y - 15), color, 2);
+		line(frame, Point(x, y), Point(x, y + 15), color, 2);
+		line(frame, Point(x, y), Point(x - 15, y), color, 2);
+		line(frame, Point(x, y), Point(x + 15, y), color, 2);
+	}
+}
+
+
+/*
+* getLeftPaddleLoc
+*
+* preconditions:	none
+* postconditions:	returns the location of the left paddle
+*/
 int MotionPaddleDetector::getLeftPaddleLoc() {
 	return(m_leftPaddlePos);
 }
 
+
+/*
+* getRightPaddleLoc
+*
+* preconditions:	none
+* postconditions:	returns the location of the right paddle
+*/
 int MotionPaddleDetector::getRightPaddleLoc() {
 	return(m_rightPaddlePos);
-}
-
-void MotionPaddleDetector::detectMotionLeft(Mat &thresholdImage, Mat &left) {
-	bool objectDetected = false;
-
-	// these two vectors needed for output of findContours
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-
-	// find contours of filtered image using openCV findContours function
-	findContours(thresholdImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);// retrieves external contours
-
-	// if contours vector is not empty, we have found some objects
-	objectDetected = contours.size() > 0 ? true : false;
-
-	if(objectDetected){
-		// the largest contour is found at the end of the contours vector
-		// we will simply assume that the biggest contour is the object we are looking for.
-		vector<vector<Point>> largestContourVec;
-		largestContourVec.push_back(contours.at(contours.size() - 1));
-
-		// make a bounding rectangle around the largest contour then find its centroid
-		// this will be the object's final estimated position.
-		Rect objBoundingRect = boundingRect(largestContourVec.at(0));
-		int x = objBoundingRect.x + objBoundingRect.width / 2;
-		int y = objBoundingRect.y + objBoundingRect.height / 2;
-
-		//update left paddle's positions
-		m_leftPaddlePos = y;
-
-		// draw crosshairs through the point being tracked in left frame
-		circle(left, Point(x, y), 10, Scalar(0, 0, 255), 2);
-		line(left, Point(x, y), Point(x, y - 15), Scalar(0, 0, 255), 2);
-		line(left, Point(x, y), Point(x, y + 15), Scalar(0, 0, 255), 2);
-		line(left, Point(x, y), Point(x - 15, y), Scalar(0, 0, 255), 2);
-		line(left, Point(x, y), Point(x + 15, y), Scalar(0, 0, 255), 2);
-	}
-
-}
-
-void MotionPaddleDetector::detectMotionRight(Mat &thresholdImage, Mat &right) {
-	bool objectDetected = false;
-
-	// these two vectors needed for output of findContours
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-
-	// find contours of filtered image using openCV findContours function
-	findContours(thresholdImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);// retrieves external contours
-
-	// if contours vector is not empty, we have found some objects
-	objectDetected = contours.size() > 0 ? true : false;
-
-	if(objectDetected){
-		// the largest contour is found at the end of the contours vector
-		// we will simply assume that the biggest contour is the object we are looking for.
-		vector<vector<Point>> largestContourVec;
-		largestContourVec.push_back(contours.at(contours.size() - 1));
-
-		// make a bounding rectangle around the largest contour then find its centroid
-		// this will be the object's final estimated position.
-		Rect objBoundingRect = boundingRect(largestContourVec.at(0));
-		int x = objBoundingRect.x + objBoundingRect.width / 2;
-		int y = objBoundingRect.y + objBoundingRect.height / 2;
-
-		//update right paddle's positions
-		m_rightPaddlePos = y;
-		x = (right.cols / 2) + x;
-
-		// draw crosshairs through the point being tracked in right frame
-		circle(right, Point(x, y), 10, Scalar(255, 0, 0), 2);
-		line(right, Point(x, y), Point(x, y - 15), Scalar(255, 0, 0), 2);
-		line(right, Point(x, y), Point(x, y + 15), Scalar(255, 0, 0), 2);
-		line(right, Point(x, y), Point(x - 15, y), Scalar(255, 0, 0), 2);
-		line(right, Point(x, y), Point(x + 15, y), Scalar(255, 0, 0), 2);
-	}
 }
 
 #endif

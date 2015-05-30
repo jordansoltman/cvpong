@@ -7,12 +7,19 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "opencv2/opencv.hpp"
 
 using namespace cv;
+const Scalar RED(0, 0, 255);
+const Scalar BLUE(255, 0, 0);
 
+/*
+* Abstract class PaddleDetector
+*
+* 
+*/
 class PaddleDetector
 {
+	
 public:
 
 	static const int DEFAULT_PADDLE_POSITION = 0;
@@ -22,7 +29,6 @@ public:
 	virtual ~PaddleDetector() {};
 
 	/*
-	 *
 	 * Abstract method process frame
 	 *
 	 * Preconditions:	Frame will be a vaild mat object with one frame of video
@@ -30,8 +36,28 @@ public:
 	 */
 	virtual void processFrame(Mat& frame) = 0;
 
+	/*
+	* Abstract get left paddle location
+	*
+	* Preconditions:	none
+	* Postconditions:	returns the location of the left paddle
+	*/
 	virtual int getLeftPaddleLoc() = 0;
+
+	/*
+	* Abstract get right paddle location
+	*
+	* Preconditions:	none
+	* Postconditions:	returns the location of the right paddle
+	*/
 	virtual int getRightPaddleLoc() = 0;
+
+	/*
+	* Abstract configure
+	*
+	* Preconditions:	none
+	* Postconditions:	configures the tracking setting
+	*/
 	virtual void configure() {};
 
 protected:
