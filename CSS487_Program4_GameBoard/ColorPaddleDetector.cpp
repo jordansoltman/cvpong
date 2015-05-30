@@ -70,7 +70,9 @@ void ColorPaddleDetector::thresholdImage(Mat &f, Mat &destination)
 
 PaddleDetector::PaddlePositions ColorPaddleDetector::processFrame(Mat &frame)
 {
-	
+	// need to test this here to make sure it is working properly
+	flip(frame, frame, 1);
+
 	Mat thresholded;
 	thresholdImage(frame, thresholded);
 

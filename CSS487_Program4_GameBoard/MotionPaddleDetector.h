@@ -1,23 +1,24 @@
-#ifndef MOTIONPADDLEDECTOR_H
-#define MOTIONPADDLEDECTOR_H
+#ifndef MotionPaddleDetector_H
+#define MotionPaddleDetector_H
 #include "PaddleDetector.h"
 
-class MotionPaddleDector : public PaddleDetector {
+class MotionPaddleDetector : public PaddleDetector {
 	static const int THRESHOLD_SENSITIVITY = 20;
 	static const int BLUR_SIZE = 10;
 public:
-	MotionPaddleDector(VideoCapture* vid);
+	MotionPaddleDetector(VideoCapture* vid);
 
-	~MotionPaddleDector() {}
+	~MotionPaddleDetector() {}
 	virtual PaddlePositions processFrame(Mat& frame);
 
 	int getLeftPaddleLoc();
 	int getRightPaddleLoc();
 
 private:
-	void detectMotionLeft(Mat thresholdImage, Mat &left);
-	void detectMotionRight(Mat thresholdImage, Mat &right);
+	void detectMotionLeft(Mat& thresholdImage, Mat& left);
+	void detectMotionRight(Mat& thresholdImage, Mat& right);
 
+	vector<vector<Point>> m_prevContour;
 	int m_leftPaddlePos;
 	int m_rightPaddlePos;
 	VideoCapture* m_vid;

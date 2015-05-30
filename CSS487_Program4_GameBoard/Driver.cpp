@@ -1,46 +1,59 @@
 #include <iostream>
+#include <string>
 #include "GameBoard.h"
 #include "MotionPaddleDetector.h"
 #include "ColorPaddleDetector.h"
 using namespace std;
 
-int main() {
+const string MPD_FLAG = "motion";
+const string CPD_FLAG = "color";
 
-	/* Object Tracking: Color */
+int main(int argc, char *argv[]) {
+	PaddleDetector* sherlock;
+	GameBoard pong;
+	Mat frame;
+	string gametype;
+
+	if(argc < 2) {
+		// no command line args, prompt for game type
+		cout << "Pick your gametype. Enter \"motion\" or \"color\" to play." << endl;
+		cout << "Gametype: ";
+		gametype = cin.get();
+
+		if(gametype != CPD_FLAG) {
+			gametype = MPD_FLAG;
+		}
+	} else {
+		sscanf_s(argv[1], "%s", &gametype);
+	}
+	cout << "Gametype = " << gametype;
+	cout << " ... initializing game ..." << endl;
+
+
+	// Get videofeed from computer's default camera and set the camer's FPS
 	VideoCapture cap(0);
+	cap.set(CV_CAP_PROP_FPS, 15);
+
+	// If camera is not on we will exit; cant play without video tracking
 	if(!cap.isOpened()) {
+		cout << "No camera has been detected, please connect one to play." << endl;
 		return(-1);
 	}
 
-	//ColorPaddleDetector CPD(&cap);
-	//CPD.configure();
-	//GameBoard pong;
-	//Mat frame;
+	if(gametype == CPD_FLAG) {
+		sherlock = new ColorPaddleDetector(&cap);
+	} else {
+		sherlock = new MotionPaddleDetector(&cap);
+	}
 
-	//while(pong.gameOn()) {
-	//	cap >> frame;
-	//	flip(frame, frame, 1);
-	//	CPD.processFrame(frame);
-	//	pong.play(frame, CPD.getLeftPaddleLoc(), CPD.getRightPaddleLoc());
-	//	int key = waitKey(30);
-	//	if (key == 27) break; // If 'esc' key is pressed we'll quit
-	//}
-	
-
-	/* Object Tracking: Motion */
-	MotionPaddleDector MPD(&cap);
-	GameBoard pong;
-	Mat frame;
-	int count = 0;
 	while(pong.gameOn()) {
 		cap >> frame;
-		//flip(frame, frame, 1);
-		MPD.processFrame(frame);
-		pong.play(frame, MPD.getLeftPaddleLoc(), MPD.getRightPaddleLoc());
-		count++;
+		sherlock->processFrame(frame);
+		pong.play(frame, sherlock->getLeftPaddleLoc(), sherlock->getRightPaddleLoc());
 		int key = waitKey(30);
 		if(key == 27) {break;} // If 'esc' key is pressed we'll quit
 	}
-	
+
+	cap.release();
 	return(0);
 };

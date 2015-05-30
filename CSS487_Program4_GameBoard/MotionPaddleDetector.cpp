@@ -1,25 +1,27 @@
-#ifndef MOTIONPADDLEDECTOR_CPP
-#define MOTIONPADDLEDECTOR_CPP
+#ifndef MotionPaddleDetector_CPP
+#define MotionPaddleDetector_CPP
 #include "MotionPaddleDetector.h"
 
-MotionPaddleDector::MotionPaddleDector(VideoCapture* vid) : PaddleDetector() {
+MotionPaddleDetector::MotionPaddleDetector(VideoCapture* vid) : PaddleDetector() {
 	m_vid = vid;
 	m_leftPaddlePos = 0;
 	m_rightPaddlePos = 0;
 }
 
-PaddleDetector::PaddlePositions MotionPaddleDector::processFrame(Mat& frame) {
+PaddleDetector::PaddlePositions MotionPaddleDetector::processFrame(Mat& frame) {
 	PaddlePositions pd(3, 3);
 	Mat frame2, gray, gray2, thres, diff;
 
-	// capture sequential images as frame1 and frame2 for movement comparison
+	// use sequential images (frame and frame2) for motion detection
 
 	// read in frame and convert to grayscale
 	m_vid->read(frame);
+	flip(frame, frame, 1);
 	cvtColor(frame, gray, COLOR_BGR2GRAY);
 
 	// read in frame2 and convert to grayscale
 	m_vid->read(frame2);
+	flip(frame2, frame2, 1);
 	cvtColor(frame2, gray2, COLOR_BGR2GRAY);
 
 	// create difference image of frame1 and frame2 after being converted to
@@ -35,42 +37,32 @@ PaddleDetector::PaddlePositions MotionPaddleDector::processFrame(Mat& frame) {
 	// threshold a second time to get a binary image (after blurring)
 	threshold(thres, thres, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
 
-	// split frame and threshold into left and right halves
-	//Mat left(frame, Rect(0, 0, 320, 480));
+	// split threshold into left and right halves
 	Mat thresholdLeft(thres, Rect(0, 0, 320, 480));
-	//Mat right(frame, Rect(320, 0, 320, 480));
 	Mat thresholdRight(thres, Rect(320, 0, 320, 480));
 
 	// detect motion in each 
 	detectMotionLeft(thresholdLeft, frame);
 	detectMotionRight(thresholdRight, frame);
-
-	// recombine the left and right frames into the frame being processed
-	//frame.rowRange(0, 480).colRange(0, 319) = left;
-	//frame.rowRange(0, 480).colRange(320, 639) = right;
-
 	return(pd);
 }
 
-int MotionPaddleDector::getLeftPaddleLoc() {
+int MotionPaddleDetector::getLeftPaddleLoc() {
 	return(m_leftPaddlePos);
 }
 
-int MotionPaddleDector::getRightPaddleLoc() {
+int MotionPaddleDetector::getRightPaddleLoc() {
 	return(m_rightPaddlePos);
 }
 
-void MotionPaddleDector::detectMotionLeft(Mat thresholdImage, Mat &left) {
+void MotionPaddleDetector::detectMotionLeft(Mat &thresholdImage, Mat &left) {
 	bool objectDetected = false;
-	//Mat temp;
-	//thresholdImage.copyTo(temp);
 
 	// these two vectors needed for output of findContours
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 
 	// find contours of filtered image using openCV findContours function
-	// findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );// retrieves all contours
 	findContours(thresholdImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);// retrieves external contours
 
 	// if contours vector is not empty, we have found some objects
@@ -101,17 +93,14 @@ void MotionPaddleDector::detectMotionLeft(Mat thresholdImage, Mat &left) {
 
 }
 
-void MotionPaddleDector::detectMotionRight(Mat thresholdImage, Mat &right) {
+void MotionPaddleDetector::detectMotionRight(Mat &thresholdImage, Mat &right) {
 	bool objectDetected = false;
-	//Mat temp = thresholdImage;
-	//thresholdImage.copyTo(temp);
 
 	// these two vectors needed for output of findContours
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 
 	// find contours of filtered image using openCV findContours function
-	// findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );// retrieves all contours
 	findContours(thresholdImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);// retrieves external contours
 
 	// if contours vector is not empty, we have found some objects
