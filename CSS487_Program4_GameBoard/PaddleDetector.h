@@ -42,7 +42,7 @@ public:
 	* Preconditions:	none
 	* Postconditions:	returns the location of the left paddle
 	*/
-	virtual int getLeftPaddleLoc() = 0;
+	int getLeftPaddleLoc() {return(m_leftPaddlePos);}
 
 	/*
 	* Abstract get right paddle location
@@ -50,7 +50,7 @@ public:
 	* Preconditions:	none
 	* Postconditions:	returns the location of the right paddle
 	*/
-	virtual int getRightPaddleLoc() = 0;
+	int getRightPaddleLoc() {return(m_rightPaddlePos);}
 
 	/*
 	* Abstract configure
@@ -61,7 +61,16 @@ public:
 	virtual void configure() {};
 
 protected:
+	/*
+	* m_leftPaddlePos
+	* contains the y-value of the object tracked in the left half of the frame being processed
+	*/
 	int m_leftPaddlePos;
+
+	/*
+	* m_rightPaddlePos
+	* contains the y-value of the object tracked in the right half of the frame being processed
+	*/
 	int m_rightPaddlePos;
 };
 

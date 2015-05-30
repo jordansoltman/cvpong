@@ -25,8 +25,6 @@ public:
 	ColorPaddleDetector(VideoCapture *vid);
 	~ColorPaddleDetector();
 	void ColorPaddleDetector::processFrame(Mat &frame);
-	int getLeftPaddleLoc();
-	int getRightPaddleLoc();
 	void configure();
 };
 

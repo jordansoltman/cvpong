@@ -127,12 +127,3 @@ void ColorPaddleDetector::processFrame(Mat &frame)
 		line(frame, Point(x, y), Point(x + 15, y), Scalar(255, 0, 0), 2);
 	}
 }
-
-int ColorPaddleDetector::getLeftPaddleLoc()
-{
-	return m_leftPaddlePos;
-}
-int ColorPaddleDetector::getRightPaddleLoc()
-{
-	return m_rightPaddlePos;
-}

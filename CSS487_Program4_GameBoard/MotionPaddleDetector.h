@@ -1,13 +1,14 @@
+/*
+* MotionPaddleDetector class
+*
+* a class which detects motion in a video frame using sequential images. Motion
+* is tracked seperately in the left and right halves of the video frame.
+*
+*/
 #ifndef MOTIONPADDLEDETECTOR_H
 #define MOTIONPADDLEDETECTOR_H
 #include "PaddleDetector.h"
 
-/*
-* MotionPaddle Detector class
-* 
-* 
-*
-*/
 class MotionPaddleDetector : public PaddleDetector {
 	static const int THRESHOLD_SENSITIVITY = 20;
 	static const int BLUR_SIZE = 10;
@@ -21,6 +22,12 @@ public:
 	*/
 	MotionPaddleDetector(VideoCapture* vid);
 
+	/*
+	* MotionPaddleDetector destructor
+	*
+	* preconditions:	none
+	* postconditions:	none
+	*/
 	~MotionPaddleDetector() {}
 
 	/*
@@ -34,22 +41,6 @@ public:
 	*					left and right halves of the frame, respectively
 	*/
 	virtual void processFrame(Mat& frame);
-
-	/*
-	* getLeftPaddleLoc
-	*
-	* preconditions:	none
-	* postconditions:	returns the location of the left paddle
-	*/
-	int getLeftPaddleLoc();
-
-	/*
-	* getRightPaddleLoc
-	*
-	* preconditions:	none
-	* postconditions:	returns the location of the right paddle
-	*/
-	int getRightPaddleLoc();
 
 private:
 	/*

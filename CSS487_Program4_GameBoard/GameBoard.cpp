@@ -1,7 +1,19 @@
+/*
+* GameBoard class
+*
+* a class representing a pong-style gameboard
+*
+*/
 #ifndef GAMEBAORD_CPP
 #define GAMEBOARD_CPP
 #include "GameBoard.h"
 
+/*
+* GameBall default constructor
+*
+* preconditions:	none
+* postconditions:	sets game ball to the default values
+*/
 GameBoard::GameBall::GameBall() {
 	m_Xpos = static_cast<int>((DEFAULT_X / 2) - (BALL_SIZE / 2));
 	m_Ypos = static_cast<int>((DEFAULT_Y / 2) - (BALL_SIZE / 2));
@@ -9,11 +21,23 @@ GameBoard::GameBall::GameBall() {
 	m_Ymov = MOVE_HORIZ;
 }
 
+/*
+* move
+*
+* preconditions:	none
+* postconditions:	sets x-movment and y-movement of the gameball to x and y, respectively
+*/
 void GameBoard::GameBall::move(double x, double y) {
 	m_Xmov = static_cast<int>(x);
 	m_Ymov = static_cast<int>(y);
 }
 
+/*
+* GameBoard default constructor
+*
+* preconditions:	none
+* postconditions:	initializes game board to the default values
+*/
 GameBoard::GameBoard() {
 	m_gameOn = true;
 	m_score[0] = 0;
@@ -23,10 +47,26 @@ GameBoard::GameBoard() {
 	initPaddles();
 }
 
+/*
+* gameOn
+*
+* returns a boolean representing the status of the game
+*
+* preconditions:	none
+* postconditions:	returns m_gameOn
+*/
 bool GameBoard::gameOn() {
 	return(m_gameOn);
 }
 
+
+/*
+* play
+*
+* preconditions:	background must be a valid Mat object not equal to nullptr.
+* postconditions:	sets the background image to background. sets the left and right
+*					paddles to the passed in values. displays the gameboard.
+*/
 void GameBoard::play(const Mat& background, int leftPaddlePos, int rightPaddleLoc) {
 	m_board = background;
 	setLeftPaddle(leftPaddlePos);
@@ -38,6 +78,14 @@ void GameBoard::play(const Mat& background, int leftPaddlePos, int rightPaddleLo
 	waitKey(1);
 }
 
+/*
+* setBall
+*
+* draws the ball on the gameboard
+*
+* preconditions:	none
+* postconditions:	sets game ball to the default values
+*/
 void GameBoard::setBall() {	
 	checkCollisions();
 	m_ball.m_Ypos += m_ball.m_Ymov;
@@ -52,6 +100,16 @@ void GameBoard::setBall() {
 	}
 }
 
+/*
+* checkCollisions
+*
+* determines if the ball has collided with the boundary or a paddle and if so
+* sets the balls movement accordingly. If the ball has collided with an
+* x-boundary than the score is also adjusted accordingly.
+*
+* preconditions:	none
+* postconditions:	sets the ball movement and score if necessary
+*/
 void GameBoard::checkCollisions() {
 	// check for y-boundary collision
 	if(m_ball.m_Ypos + m_ball.m_Ymov + BALL_SIZE >= m_board.rows - 1 ||
@@ -110,6 +168,12 @@ void GameBoard::checkCollisions() {
 	}
 }
 
+/*
+* setLeftPaddle
+*
+* preconditions:	none
+* postconditions:	draws the left paddle on the gameboard
+*/
 void GameBoard::setLeftPaddle(int y) {
 	// check if new location is in bounds
 	if(y <= 1) {
@@ -130,6 +194,12 @@ void GameBoard::setLeftPaddle(int y) {
 	}
 }
 
+/*
+* setRightPaddle
+*
+* preconditions:	none
+* postconditions:	draws the right paddle on the gameboard
+*/
 void GameBoard::setRightPaddle(int y) {
 	// check if new location is in bounds
 	if(y <= 1) {
@@ -150,6 +220,12 @@ void GameBoard::setRightPaddle(int y) {
 	}
 }
 
+/*
+* initPaddles
+*
+* preconditions:	none
+* postconditions:	initializes the paddles to their default locations
+*/
 void GameBoard::initPaddles() {
 	m_leftPaddle.m_Xpos = BOARDER_WIDTH * 2;
 	m_leftPaddle.m_Ypos = static_cast<int>((DEFAULT_Y / 2) - (PADDLE_Y / 2));
@@ -158,6 +234,12 @@ void GameBoard::initPaddles() {
 	m_rightPaddle.m_Ypos = static_cast<int>((DEFAULT_Y / 2) - (PADDLE_Y / 2));
 }
 
+/*
+* setScore
+*
+* preconditions:	none
+* postconditions:	draws the score on the gameboard and displays the winner when necessary
+*/
 void GameBoard::setScore() {
 	std::string score = "";
 	if(m_score[0] >= WINNING_SCORE) {

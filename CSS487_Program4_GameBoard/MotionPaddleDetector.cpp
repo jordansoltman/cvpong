@@ -1,3 +1,10 @@
+/*
+* MotionPaddleDetector class
+*
+* a class which detects motion in a video frame using sequential images. Motion
+* is tracked seperately in the left and right halves of the video frame.
+*
+*/
 #ifndef MOTIONPADDLEDETECTOR_CPP
 #define MOTIONPADDLEDETECTOR_CPP
 #include "MotionPaddleDetector.h"
@@ -121,28 +128,6 @@ void MotionPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 		line(frame, Point(x, y), Point(x - 15, y), color, 2);
 		line(frame, Point(x, y), Point(x + 15, y), color, 2);
 	}
-}
-
-
-/*
-* getLeftPaddleLoc
-*
-* preconditions:	none
-* postconditions:	returns the location of the left paddle
-*/
-int MotionPaddleDetector::getLeftPaddleLoc() {
-	return(m_leftPaddlePos);
-}
-
-
-/*
-* getRightPaddleLoc
-*
-* preconditions:	none
-* postconditions:	returns the location of the right paddle
-*/
-int MotionPaddleDetector::getRightPaddleLoc() {
-	return(m_rightPaddlePos);
 }
 
 #endif
