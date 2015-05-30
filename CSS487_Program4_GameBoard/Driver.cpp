@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
 	cout << "Gametype = " << gametype;
 	cout << " ... initializing game ..." << endl;
 
-
 	// Get videofeed from computer's default camera and set the camer's FPS
 	VideoCapture cap(0);
 	cap.set(CV_CAP_PROP_FPS, 15);
@@ -54,6 +53,8 @@ int main(int argc, char *argv[]) {
 		if(key == 27) {break;} // If 'esc' key is pressed we'll quit
 	}
 
+	// hold window until key press
+	waitKey(0);
 	cap.release();
 	return(0);
 };

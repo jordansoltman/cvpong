@@ -75,7 +75,7 @@ void GameBoard::play(const Mat& background, int leftPaddlePos, int rightPaddleLo
 	setBall();
 	namedWindow("Board");
 	imshow("Board", m_board);
-	waitKey(1);
+	//waitKey(1);
 }
 
 /*

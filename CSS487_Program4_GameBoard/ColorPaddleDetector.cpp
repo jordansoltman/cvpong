@@ -21,7 +21,7 @@ ColorPaddleDetector::ColorPaddleDetector(VideoCapture *vid)
 {
 	m_leftPaddlePos = DEFAULT_PADDLE_POSITION;
 	m_rightPaddlePos = DEFAULT_PADDLE_POSITION;
-	this->vid = vid;
+	m_vid = vid;
 	configure();
 }
 
@@ -49,18 +49,18 @@ void ColorPaddleDetector::configure()
 
 	namedWindow("Settings", CV_WINDOW_AUTOSIZE); //create a window called "Control"
 	//Create trackbars in "Control" window
-	cvCreateTrackbar("Low Hue", "Settings", &lowHue, 179); //Hue (0 - 179)
-	cvCreateTrackbar("High Hue", "Settings", &highHue, 179);
+	cvCreateTrackbar("Low Hue", "Settings", &m_lowHue, 179); //Hue (0 - 179)
+	cvCreateTrackbar("High Hue", "Settings", &m_highHue, 179);
 
-	cvCreateTrackbar("Low Saturation", "Settings", &lowSaturation, 255); //Saturation (0 - 255)
-	cvCreateTrackbar("High Saturation", "Settings", &highSaturation, 255);
+	cvCreateTrackbar("Low Saturation", "Settings", &m_lowSat, 255); //Saturation (0 - 255)
+	cvCreateTrackbar("High Saturation", "Settings", &m_highSat, 255);
 
-	cvCreateTrackbar("Low Value", "Settings", &lowValue, 255); //Value (0 - 255)
-	cvCreateTrackbar("High Value", "Settings", &highValue, 255);
+	cvCreateTrackbar("Low Value", "Settings", &m_lowVal, 255); //Value (0 - 255)
+	cvCreateTrackbar("High Value", "Settings", &m_highVal, 255);
 
 	while (true)
 	{
-		*vid >> frame;
+		*m_vid >> frame;
 		flip(frame, frame, 1);
 		thresholdImage(frame, thresholded);
 		
@@ -69,6 +69,7 @@ void ColorPaddleDetector::configure()
 		if (key != -1) break;
 	}
 
+	// test this
 	cvDestroyAllWindows();
 }
 
@@ -87,23 +88,23 @@ void ColorPaddleDetector::configureSettings(int e, int x, int y, int flags, void
 * preconditions:	frame must be the frame of video currently being processed. 
 * postconditions:	creates a thresholded image from frame and returns it in destination
 */
-void ColorPaddleDetector::thresholdImage(Mat frame, Mat &destination)
+void ColorPaddleDetector::thresholdImage(Mat frame, Mat &dest)
 {
 	Mat HSV;
 
-	// Create a HSV version of the frame
+	// convert frame from BGR to HSV
 	cvtColor(frame, HSV, COLOR_BGR2HSV);
 
-	// Threshold image
-	inRange(HSV, Scalar(lowHue, lowSaturation, lowValue), Scalar(highHue, highSaturation, highValue), destination); //Threshold the image
+	// create threshold image using HSV frame and save in dest
+	inRange(HSV, Scalar(m_lowHue, m_lowSat, m_lowVal), Scalar(m_highHue, m_highSat, m_highVal), dest);
 
-	// remove small objects from the image foreground 
-	erode(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	dilate(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	// remove small objects from dest 
+	erode(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	dilate(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 
-	// fill the removed holes in the image foreground 
-	dilate(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	erode(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	// fill the removed holes in dest 
+	dilate(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	erode(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 }
 
 /*
@@ -120,7 +121,6 @@ void ColorPaddleDetector::thresholdImage(Mat frame, Mat &destination)
 */
 void ColorPaddleDetector::processFrame(Mat &frame)
 {
-	// need to test this here to make sure it is working properly
 	flip(frame, frame, 1);
 
 	Mat thresholded;
@@ -160,8 +160,8 @@ void ColorPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 	if(area > 10000)
 	{
 		// calculate the position of the color being tracke in the left frame
-		int x = m10 / area;
-		int y = m01 / area;
+		int x = static_cast<int>(m10 / area);
+		int y = static_cast<int>(m01 / area);
 
 		Scalar color;
 		if(isRight) {
@@ -182,52 +182,3 @@ void ColorPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 		line(frame, Point(x, y), Point(x + 15, y), color, 2);
 	}
 }
-
-
-/*
-
-// calculate moments in left and right frames
-Moments LeftMoments = moments(thresholdLeft);
-Moments RightMoments = moments(thresholdRight);
-
-double left_m01 = LeftMoments.m01;
-double left_m10 = LeftMoments.m10;
-double left_area = LeftMoments.m00;
-
-double right_m01 = RightMoments.m01;
-double right_m10 = RightMoments.m10;
-double right_area = RightMoments.m00;
-
-if(left_area > 10000)
-{
-// calculate the position of the color being tracke in the left frame
-int x = left_m10 / left_area;
-int y = left_m01 / left_area;
-
-m_leftPaddlePos = y;
-
-// draw crosshairs through the point being tracked in the left frame
-circle(frame, Point(x, y), 10, Scalar(0, 0, 255), 2);
-line(frame, Point(x, y), Point(x, y - 15), Scalar(0, 0, 255), 2);
-line(frame, Point(x, y), Point(x, y + 15), Scalar(0, 0, 255), 2);
-line(frame, Point(x, y), Point(x - 15, y), Scalar(0, 0, 255), 2);
-line(frame, Point(x, y), Point(x + 15, y), Scalar(0, 0, 255), 2);
-}
-
-if(right_area > 10000)
-{
-// calculate the position of the color being tracke in the right frame
-int x = right_m10 / right_area;
-int y = right_m01 / right_area;
-
-
-
-// draw crosshairs through the point being tracked in the right frame
-circle(frame, Point(x, y), 10, Scalar(255, 0, 0), 2);
-line(frame, Point(x, y), Point(x, y - 15), Scalar(255, 0, 0), 2);
-line(frame, Point(x, y), Point(x, y + 15), Scalar(255, 0, 0), 2);
-line(frame, Point(x, y), Point(x - 15, y), Scalar(255, 0, 0), 2);
-line(frame, Point(x, y), Point(x + 15, y), Scalar(255, 0, 0), 2);
-}
-
-*/

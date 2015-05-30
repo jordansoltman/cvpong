@@ -13,16 +13,16 @@ class ColorPaddleDetector :
 {
 private:
 
-	int lowHue = 0;
-	int highHue = 0;
+	int m_lowHue = 0;
+	int m_highHue = 0;
 
-	int lowSaturation = 0;
-	int highSaturation = 0;
+	int m_lowSat = 0;
+	int m_highSat = 0;
 
-	int lowValue = 0;
-	int highValue = 0;
+	int m_lowVal = 0;
+	int m_highVal = 0;
 
-	VideoCapture *vid;
+	VideoCapture *m_vid;
 
 	/*
 	* configure
