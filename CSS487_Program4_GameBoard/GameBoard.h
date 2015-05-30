@@ -15,19 +15,19 @@ const int BALL_SIZE = 33;
 const int PADDLE_X = 18;
 const int PADDLE_Y = 120;
 const int PADDLE_MOD = PADDLE_Y / 3;
-const int WINNING_SCORE = 3;
-const double SPEED_INCREMENT = 2.5;
+const int WINNING_SCORE = 33;
+const double SPEED_INCREMENT = 1.5;
 
-const int MOVE_LEFT = -22;
-const int MOVE_RIGHT = 22;
-const int MOVE_UP = -22;
-const int MOVE_DOWN = 22;
+const int MOVE_LEFT = -11;
+const int MOVE_RIGHT = 11;
+const int MOVE_UP = -11;
+const int MOVE_DOWN = 11;
 const int MOVE_HORIZ = 0;
 
 const int BOARDER_COLOR[3] = {0, 153, 0};
 const int BALL_COLOR[3] = {0, 204, 0};
-const int L_PADDLE_COLOR[3] = {0 , 0, 255};
-const int R_PADDLE_COLOR[3] = {255, 0, 0};
+const int L_PADDLE_COLOR[3] = {0 , 0, 255}; /* red paddle */
+const int R_PADDLE_COLOR[3] = {255, 0, 0}; /* blue paddle */
 
 
 class GameBoard {

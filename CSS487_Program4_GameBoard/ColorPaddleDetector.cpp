@@ -67,30 +67,63 @@ void ColorPaddleDetector::thresholdImage(Mat &f, Mat &destination)
 	erode(destination, destination, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
 }
 
+
 PaddleDetector::PaddlePositions ColorPaddleDetector::processFrame(Mat &frame)
 {
 	
 	Mat thresholded;
-
 	thresholdImage(frame, thresholded);
 
-	// Calculate moments
-	Moments oMoments = moments(thresholded);
+	// create left and right threshold images for seperate color detection in
+	// left and right sides of the frame
+	Mat thresholdLeft(thresholded, Rect(0, 0, 320, 480));
+	Mat thresholdRight(thresholded, Rect(320, 0, 320, 480));
 
-	double dM01 = oMoments.m01;
-	double dM10 = oMoments.m10;
-	double dArea = oMoments.m00;
+	// calculate moments in left and right frames
+	Moments LeftMoments = moments(thresholdLeft);
+	Moments RightMoments = moments(thresholdRight);
 
-	if (dArea > 10000)
+	double left_m01 = LeftMoments.m01;
+	double left_m10 = LeftMoments.m10;
+	double left_area = LeftMoments.m00;
+
+	double right_m01 = RightMoments.m01;
+	double right_m10 = RightMoments.m10;
+	double right_area = RightMoments.m00;
+
+	if(left_area > 10000)
 	{
-		//calculate the position of the ball
-		int posX = dM10 / dArea;
-		int posY = dM01 / dArea;
+		// calculate the position of the color being tracke in the left frame
+		int x = left_m10 / left_area;
+		int y = left_m01 / left_area;
 
-		if (posX > frame.cols / 2)
-			rightPaddlePos = posY;
-		else
-			leftPaddlePos = posY;
+		leftPaddlePos = y;
+
+		// draw crosshairs through the point being tracked in the left frame
+		circle(frame, Point(x, y), 10, Scalar(0, 0, 255), 2);
+		line(frame, Point(x, y), Point(x, y - 15), Scalar(0, 0, 255), 2);
+		line(frame, Point(x, y), Point(x, y + 15), Scalar(0, 0, 255), 2);
+		line(frame, Point(x, y), Point(x - 15, y), Scalar(0, 0, 255), 2);
+		line(frame, Point(x, y), Point(x + 15, y), Scalar(0, 0, 255), 2);
+	}
+
+	if(right_area > 10000)
+	{
+		// calculate the position of the color being tracke in the right frame
+		int x = right_m10 / right_area;
+		int y = right_m01 / right_area;
+
+		rightPaddlePos = y;
+
+		// position the object appears in the entire frame
+		x = (frame.cols / 2) + x;
+
+		// draw crosshairs through the point being tracked in the right frame
+		circle(frame, Point(x, y), 10, Scalar(255, 0, 0), 2);
+		line(frame, Point(x, y), Point(x, y - 15), Scalar(255, 0, 0), 2);
+		line(frame, Point(x, y), Point(x, y + 15), Scalar(255, 0, 0), 2);
+		line(frame, Point(x, y), Point(x - 15, y), Scalar(255, 0, 0), 2);
+		line(frame, Point(x, y), Point(x + 15, y), Scalar(255, 0, 0), 2);
 	}
 
 	return PaddlePositions(leftPaddlePos, rightPaddlePos);

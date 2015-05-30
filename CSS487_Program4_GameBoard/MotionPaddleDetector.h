@@ -18,9 +18,8 @@ private:
 	void detectMotionLeft(Mat thresholdImage, Mat &left);
 	void detectMotionRight(Mat thresholdImage, Mat &right);
 
-	int m_leftPaddle[2];
-	int m_rightPaddle[2];
-
+	int m_leftPaddlePos;
+	int m_rightPaddlePos;
 	VideoCapture* m_vid;
 };
 
