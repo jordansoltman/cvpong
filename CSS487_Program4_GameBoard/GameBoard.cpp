@@ -73,9 +73,8 @@ void GameBoard::play(const Mat& background, int leftPaddlePos, int rightPaddleLo
 	setRightPaddle(rightPaddleLoc);
 	setScore();
 	setBall();
-	namedWindow("Board");
-	imshow("Board", m_board);
-	//waitKey(1);
+	namedWindow("cvpong");
+	imshow("cvpong", m_board);
 }
 
 /*

@@ -9,6 +9,7 @@ const string MPD_FLAG = "motion";
 const string CPD_FLAG = "color";
 
 int main(int argc, char *argv[]) {
+
 	PaddleDetector* sherlock;
 	GameBoard pong;
 	Mat frame;
@@ -50,11 +51,11 @@ int main(int argc, char *argv[]) {
 		sherlock->processFrame(frame);
 		pong.play(frame, sherlock->getLeftPaddleLoc(), sherlock->getRightPaddleLoc());
 		int key = waitKey(30);
-		if(key == 27) {break;} // If 'esc' key is pressed we'll quit
+		if(key == 27) { break; } // If 'esc' key is pressed we'll quit
 	}
+	cap.release();
 
 	// hold window until key press
 	waitKey(0);
-	cap.release();
 	return(0);
 };
