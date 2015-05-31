@@ -95,16 +95,14 @@ void ColorPaddleDetector::createThresholdImg(Mat frame, Mat &dest)
 	// convert frame from BGR to HSV
 	cvtColor(frame, HSV, COLOR_BGR2HSV);
 
+	GaussianBlur(HSV, HSV, Size(7, 7), 2, 2);
+	GaussianBlur(HSV, HSV, Size(7, 7), 2, 2);
+
 	// create threshold image using HSV frame and save in dest
 	inRange(HSV, Scalar(m_lowHue, m_lowSat, m_lowVal), Scalar(m_highHue, m_highSat, m_highVal), dest);
 
-	// remove small objects from dest 
-	erode(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	dilate(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-	// fill the removed holes in dest 
-	dilate(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-	erode(dest, dest, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+	
+	
 }
 
 /*
