@@ -11,6 +11,8 @@
 class ColorPaddleDetector :
 	public PaddleDetector
 {
+	const static int AREA_THRES = 10000;
+
 private:
 
 	int m_lowHue = 0;
@@ -36,7 +38,7 @@ private:
 	void configure();
 
 	/*
-	* thresholdImage
+	* createThresholdImg
 	*
 	* creates a threshold image from frame, removes small objects from the foreground
 	* of the thresholded image and then fills the removed holes. The thresholded
@@ -45,7 +47,7 @@ private:
 	* preconditions:	frame must be the frame of video currently being processed.
 	* postconditions:	creates a thresholded image from frame and returns it in destination
 	*/
-	void thresholdImage(Mat frame, Mat &destination);
+	void createThresholdImg(Mat frame, Mat &destination);
 
 	/*
 	* detectMotion

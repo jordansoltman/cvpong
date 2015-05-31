@@ -9,6 +9,10 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
+
+static const string MPD_FLAG = "move";
+const string CPD_FLAG = "color";
+
 const Scalar RED(0, 0, 255);
 const Scalar BLUE(255, 0, 0);
 const bool IS_RED = false;
@@ -23,7 +27,7 @@ class PaddleDetector
 {
 	
 public:
-
+	
 	static const int DEFAULT_PADDLE_POSITION = 0;
 
 	PaddleDetector() {};

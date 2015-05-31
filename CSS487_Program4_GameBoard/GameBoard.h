@@ -1,7 +1,7 @@
 /*
 * GameBoard class
 *
-* a class representing a pong-style gameboard
+* a class representing a cvpong gameboard
 *
 */
 #ifndef GAMEBAORD_H

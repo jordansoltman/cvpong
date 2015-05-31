@@ -5,42 +5,49 @@
 #include "ColorPaddleDetector.h"
 using namespace std;
 
-const string MPD_FLAG = "motion";
-const string CPD_FLAG = "color";
 
+
+/*
+* main
+* 
+* plays a game of cvpong using either color or motion for tracking the paddle
+* movements. If no command line arguments were entered, the user is prompted
+* for what type of tracking they would like to use: motion or color. 
+*
+*/
 int main(int argc, char *argv[]) {
 
 	PaddleDetector* sherlock;
 	GameBoard pong;
 	Mat frame;
-	string gametype;
+	string tracking;
 
 	if(argc < 2) {
 		// no command line args, prompt for game type
-		cout << "Pick your gametype. Enter \"motion\" or \"color\" to play." << endl;
-		cout << "Gametype: ";
-		cin >> gametype;
+		cout << "Pick your method for motion tracking. Enter \"move\" or \"color\" to play." << endl;
+		cout << "tracking: ";
+		cin >> tracking;
 
-		if(gametype != CPD_FLAG) {
-			gametype = MPD_FLAG;
+		if(tracking != CPD_FLAG) {
+			tracking = MPD_FLAG;
 		}
 	} else {
-		sscanf_s(argv[1], "%s", &gametype);
+		sscanf_s(argv[1], "%s", &tracking);
 	}
-	cout << "Gametype = " << gametype;
+	cout << "Gametype = " << tracking;
 	cout << " ... initializing game ..." << endl;
 
-	// Get videofeed from computer's default camera and set the camer's FPS
+	// get videofeed from computer's default camera and set the camer's FPS
 	VideoCapture cap(0);
 	cap.set(CV_CAP_PROP_FPS, 15);
 
-	// If camera is not on we will exit; cant play without video tracking
+	// if camera is not on we will exit; cant play without video tracking
 	if(!cap.isOpened()) {
 		cout << "No camera has been detected, please connect one to play." << endl;
 		return(-1);
 	}
 
-	if(gametype == CPD_FLAG) {
+	if(tracking == CPD_FLAG) {
 		sherlock = new ColorPaddleDetector(&cap);
 	} else {
 		sherlock = new MotionPaddleDetector(&cap);

@@ -62,7 +62,7 @@ void ColorPaddleDetector::configure()
 	{
 		*m_vid >> frame;
 		flip(frame, frame, 1);
-		thresholdImage(frame, thresholded);
+		createThresholdImg(frame, thresholded);
 		
 		imshow("Configure", thresholded);
 		int key = waitKey(30);
@@ -79,7 +79,7 @@ void ColorPaddleDetector::configureSettings(int e, int x, int y, int flags, void
 }
 
 /*
-* thresholdImage
+* createThresholdImg
 *
 * creates a threshold image from frame, removes small objects from the foreground
 * of the thresholded image and then fills the removed holes. The thresholded 
@@ -88,7 +88,7 @@ void ColorPaddleDetector::configureSettings(int e, int x, int y, int flags, void
 * preconditions:	frame must be the frame of video currently being processed. 
 * postconditions:	creates a thresholded image from frame and returns it in destination
 */
-void ColorPaddleDetector::thresholdImage(Mat frame, Mat &dest)
+void ColorPaddleDetector::createThresholdImg(Mat frame, Mat &dest)
 {
 	Mat HSV;
 
@@ -123,13 +123,15 @@ void ColorPaddleDetector::processFrame(Mat &frame)
 {
 	flip(frame, frame, 1);
 
-	Mat thresholded;
-	thresholdImage(frame, thresholded);
+	Mat thres;
+	createThresholdImg(frame, thres);
 
 	// create left and right threshold images for seperate color detection in
 	// left and right sides of the frame
-	Mat thresholdLeft(thresholded, Rect(0, 0, 320, 480));
-	Mat thresholdRight(thresholded, Rect(320, 0, 320, 480));
+	int x = thres.cols / 2;
+	int y = thres.rows;
+	Mat thresholdLeft(thres, Rect(0, 0, 320, 480));
+	Mat thresholdRight(thres, Rect(320, 0, 320, 480));
 
 	// detect motion in the left and right frames 
 	detectMotion(thresholdLeft, frame, IS_RED);
@@ -157,7 +159,7 @@ void ColorPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 	double m10 = Moms.m10;
 	double area = Moms.m00;
 
-	if(area > 10000)
+	if(area > AREA_THRES)
 	{
 		// calculate the position of the color being tracke in the left frame
 		int x = static_cast<int>(m10 / area);
@@ -176,9 +178,9 @@ void ColorPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 
 		// draw crosshairs through the point being tracked in the left frame
 		circle(frame, Point(x, y), 10, color, 2);
-		line(frame, Point(x, y), Point(x, y - 15), color, 2);
-		line(frame, Point(x, y), Point(x, y + 15), color, 2);
-		line(frame, Point(x, y), Point(x - 15, y), color, 2);
-		line(frame, Point(x, y), Point(x + 15, y), color, 2);
+		line(frame, Point(x, y + 15), Point(x, y - 15), color, 2);
+		//line(frame, Point(x, y), Point(x, y + 15), color, 2);
+		line(frame, Point(x + 15, y), Point(x - 15, y), color, 2);
+		//line(frame, Point(x, y), Point(x + 15, y), color, 2);
 	}
 }

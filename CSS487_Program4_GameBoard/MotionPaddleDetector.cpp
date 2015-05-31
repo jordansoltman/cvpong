@@ -61,8 +61,10 @@ void MotionPaddleDetector::processFrame(Mat& frame) {
 	threshold(thres, thres, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
 
 	// split threshold into left and right halves
-	Mat thresholdLeft(thres, Rect(0, 0, 320, 480));
-	Mat thresholdRight(thres, Rect(320, 0, 320, 480));
+	int x = thres.cols / 2;
+	int y = thres.rows;
+	Mat thresholdLeft(thres, Rect(0, 0, x, y));
+	Mat thresholdRight(thres, Rect(x, 0, x, y));
 
 	// detect motion in each half of the frame
 	detectMotion(thresholdLeft, frame, IS_RED);
@@ -86,7 +88,7 @@ void MotionPaddleDetector::processFrame(Mat& frame) {
 void MotionPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 	bool objectDetected = false;
 
-	// these two vectors are needed for the output of findContours
+	// the contour vector and hieracrchy returned from findContours
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 
@@ -97,17 +99,15 @@ void MotionPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 	objectDetected = contours.size() > 0 ? true : false;
 
 	if(objectDetected){
-		// the largest contour is found at the end of the contours vector
-		// we will simply assume that the biggest contour is the object we are looking for.
+		// we will track the largest contour
 		vector<vector<Point>> largestContourVec;
 		largestContourVec.push_back(contours.at(contours.size() - 1));
 
-		// make a bounding rectangle around the largest contour then find its centroid
-		// this will be the object's final estimated position.
+		// create a bounding rectangle around the largest contour and then take
+		// the center of the bounding rectangle and use this point for tracking
 		Rect objBoundingRect = boundingRect(largestContourVec.at(0));
 		int x = objBoundingRect.x + objBoundingRect.width / 2;
 		int y = objBoundingRect.y + objBoundingRect.height / 2;
-
 		
 		Scalar color;
 		if(isRight) {
@@ -121,12 +121,10 @@ void MotionPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 			color = RED;
 		}
 
-		// draw crosshairs through the point being tracked in right frame
+		// draw crosshairs through the point being tracked in the frame
 		circle(frame, Point(x, y), 10, color, 2);
-		line(frame, Point(x, y), Point(x, y - 15), color, 2);
-		line(frame, Point(x, y), Point(x, y + 15), color, 2);
-		line(frame, Point(x, y), Point(x - 15, y), color, 2);
-		line(frame, Point(x, y), Point(x + 15, y), color, 2);
+		line(frame, Point(x, y + 15), Point(x, y - 15), color, 2);
+		line(frame, Point(x + 15, y), Point(x - 15, y), color, 2);
 	}
 }
 
