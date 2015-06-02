@@ -5,8 +5,6 @@
 #include "ColorPaddleDetector.h"
 using namespace std;
 
-
-
 /*
 * main
 * 

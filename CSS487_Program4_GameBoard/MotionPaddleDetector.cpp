@@ -51,22 +51,22 @@ void MotionPaddleDetector::processFrame(Mat& frame) {
 	// grayscale images
 	absdiff(gray, gray2, diff);
 
-	// threshold difference image at a given sensitivity value
+	// threshold difference
 	threshold(diff, thres, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
 
-	// blur the image to get rid of the noise. output will be an intensity image
+	// blur the image. output will be an intensity image
 	blur(thres, thres, cv::Size(BLUR_SIZE, BLUR_SIZE));
 
-	// threshold a second time to get a binary image (after blurring)
+	// threshold intensity image to get binary image (after blurring)
 	threshold(thres, thres, THRESHOLD_SENSITIVITY, 255, THRESH_BINARY);
 
-	// split threshold into left and right halves
+	// split threshold (now binary image) into left and right halves
 	int x = thres.cols / 2;
 	int y = thres.rows;
 	Mat thresholdLeft(thres, Rect(0, 0, x, y));
 	Mat thresholdRight(thres, Rect(x, 0, x, y));
 
-	// detect motion in each half of the frame
+	// detect motion in each half of the binary image
 	detectMotion(thresholdLeft, frame, IS_RED);
 	detectMotion(thresholdRight, frame, IS_BLUE);
 }
@@ -92,14 +92,14 @@ void MotionPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 
-	// find contours of filtered image using openCV findContours function
+	// find contours in binary image
 	findContours(thres, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);// retrieves external contours
 
-	// if contours vector is not empty, we have found some objects
+	// if contours vector is empty, no objects were detected
 	objectDetected = contours.size() > 0 ? true : false;
 
 	if(objectDetected){
-		// we will track the largest contour
+		// select the largest contour
 		vector<vector<Point>> largestContourVec;
 		largestContourVec.push_back(contours.at(contours.size() - 1));
 

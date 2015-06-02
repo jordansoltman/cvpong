@@ -177,8 +177,6 @@ void ColorPaddleDetector::detectMotion(Mat &thres, Mat &frame, bool isRight) {
 		// draw crosshairs through the point being tracked in the left frame
 		circle(frame, Point(x, y), 10, color, 2);
 		line(frame, Point(x, y + 15), Point(x, y - 15), color, 2);
-		//line(frame, Point(x, y), Point(x, y + 15), color, 2);
 		line(frame, Point(x + 15, y), Point(x - 15, y), color, 2);
-		//line(frame, Point(x, y), Point(x + 15, y), color, 2);
 	}
 }
