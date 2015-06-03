@@ -73,10 +73,6 @@ void ColorPaddleDetector::configure()
 	cvDestroyAllWindows();
 }
 
-void ColorPaddleDetector::configureSettings(int e, int x, int y, int flags, void *userData)
-{
-
-}
 
 /*
 * createThresholdImg

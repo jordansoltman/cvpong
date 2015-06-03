@@ -64,7 +64,6 @@ private:
 	*/
 	void detectMotion(Mat &thres, Mat &frame, bool isRight);
 
-	void configureSettings(int e, int x, int y, int flags, void *userData);
 
 public:
 	/*
